@@ -49,7 +49,7 @@ for (IDnc in LIST_nc) {
 	FLAG_NO_PAR=FALSE
  
 #### Getting the name of the core file
-	file_in_C=str_replace(IDnc,"/B","/")
+	file_in_C=str_replace(IDnc,"/B","/") #NOTE will not work if a directory in the path starts with "B"
 
 # if B and C are not in the same mode 
 	if (!file.exists(file_in_C)) file_in_C=str_replace(file_in_C,"profiles/R","profiles/D")
@@ -280,23 +280,36 @@ for (IDnc in LIST_nc) {
 
 	MINDEPTH=max(PRES_CTD[,iprof_chla])
 	MAXCHLA=max(CHLA_NPQ,na.rm=TRUE)
-	MINDEPTH=MLD+50
+	MINDEPTH=max(MLD+50, ipar_15_depth+50)
 
 	name_file=str_sub(IDnc,str_length(IDnc)-15,str_length(IDnc)-3)
 
+	#if (FLAG_SHALLOW & !FLAG_NO_PAR) {
+		png(file=paste(name_file,".png",sep=""), width=900, height=300)
 
-	png(file=paste(name_file,".png",sep=""))
+		par(mfrow=c(1,3))
+		matplot(CHLA_NPQ[,iprof_chla],PRES_CTD[,iprof_chla],col=2,lwd=2,type="l",ylab="Depth [m]",cex.lab=1.5,cex.axis=1.5,xlab=expression("Chlorophyll a [mg."*m ^ -3 * "]"),xlim=c(-0.2,MAXCHLA+0.5),ylim=rev(c(0, MINDEPTH)))
+		matplot(CHLA[,iprof_chla],PRES_CTD[,iprof_chla],col=5,lwd=2,type="l",ylab="Depth [m]",cex.lab=1.5,cex.axis=1.5,xlab=expression("Chlorophyll a [mg."*m ^ -3 * "]"),xlim=c(-0.2,MAXCHLA+0.5),ylim=rev(c(0, MINDEPTH)),add=TRUE)
+		abline(h=PRES_CTD[i_mld,iprof_chla])	
+		abline(h=PRES_CTD[i_ipar15,iprof_chla], lty="dashed")	
+	
+		legend("bottomright",c("CHLA_NPQ","CHLA"),pch=c(".","."),lwd=c(2,2),col=c(2,5),lty=c(1,1),cex=1.2)		
+		#text(MAXJULD-100,MINGAIN-0.1,paste("mean GAIN m =",round(mean(GAIN_month,na.rm=TRUE),4)," error from sd =",err_month))
+		#text(MAXJULD-100,MINGAIN-0.15,paste("mean GAIN a =",round(mean(GAIN_ann,na.rm=TRUE),4)," error from sd =",err_ann)) 
 
-	matplot(CHLA_NPQ[,iprof_chla],PRES_CTD[,iprof_chla],col=2,lwd=2,type="l",ylab="Depth [m]",cex.lab=1.5,cex.axis=1.5,xlab=expression("Chlorophyll a [mg."*m ^ -3 * "]"),xlim=c(-0.2,MAXCHLA+0.5),ylim=rev(c(0, MINDEPTH)))
-	matplot(CHLA[,iprof_chla],PRES_CTD[,iprof_chla],col=5,lwd=2,type="l",ylab="Depth [m]",cex.lab=1.5,cex.axis=1.5,xlab=expression("Chlorophyll a [mg."*m ^ -3 * "]"),xlim=c(-0.2,MAXCHLA+0.5),ylim=rev(c(0, MINDEPTH)),add=TRUE)
 
-	legend("bottomright",c("CHLA_NPQ","CHLA"),pch=c(".","."),lwd=c(2,2),col=c(2,5),lty=c(1,1),cex=1.2)
+		matplot(MED_BBP700[,iprof_chla], PRES_CTD[,iprof_chla], col=5, lwd=2, type="l", ylab="Depth [m]", cex.lab=1.5, cex.axis=1.5, xlab=expression("BBP700"),ylim=rev(c(0, MINDEPTH)))
+		abline(h=PRES_CTD[i_mld,iprof_chla])	
+		abline(h=PRES_CTD[i_ipar15,iprof_chla], lty="dashed")	
 
+	if (!FLAG_NO_PAR) {		
+		matplot(PAR_CHLA, PRES_CTD[,iprof_chla], col=5, lwd=2, type="l", ylab="Depth [m]", cex.lab=1.5, cex.axis=1.5, xlab=expression("PAR"),ylim=rev(c(0, MINDEPTH)))
+		abline(h=PRES_CTD[i_mld,iprof_chla])	
+		abline(h=PRES_CTD[i_ipar15,iprof_chla], lty="dashed")	
+	}
 
-#text(MAXJULD-100,MINGAIN-0.1,paste("mean GAIN m =",round(mean(GAIN_month,na.rm=TRUE),4)," error from sd =",err_month))
-#text(MAXJULD-100,MINGAIN-0.15,paste("mean GAIN a =",round(mean(GAIN_ann,na.rm=TRUE),4)," error from sd =",err_ann)) 
-
-	dev.off()
+		dev.off()
+	#}
 
 ###############################################################
 ####    changing the NPQ_QC in CHLA_ADJUSTED_QC (to confirm) 
