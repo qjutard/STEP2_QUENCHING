@@ -9,15 +9,18 @@
 library(ncdf4)
 library(stringr)
 
-source("./MLD_calc.R")
+uf=commandArgs(trailingOnly = TRUE)
 
-source("./IPAR_15_DEPTH.R")
+SOURCE = uf[2]
 
-source("./RunningFilter.R")
+source(paste0(SOURCE, "MLD_calc.R"))
 
-uf=commandArgs()
+source(paste0(SOURCE, "IPAR_15_DEPTH.R"))
 
-file_dark  <- uf[2]
+source(paste0(SOURCE, "RunningFilter.R"))
+
+
+file_dark  <- uf[1]
 
 ### reading the dark value
 
