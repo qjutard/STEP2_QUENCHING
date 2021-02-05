@@ -244,8 +244,10 @@ for (IDnc in LIST_nc) {
 		CHLA_NPQ_D[(i_mld+1):i_ipar15,iprof_chla]=MED_CHLA[(i_mld+1):i_ipar15,iprof_chla]/(0.092+0.908/(1+(PAR_CHLA[(i_mld+1):i_ipar15]/261)^2.2))
 
 # shallow than the MLD 
-		CHLA_NPQ_D[1:i_mld,iprof_chla]=RAPP_at_MLD*MED_BBP700[1:i_mld,iprof_chla]
+		#CHLA_NPQ_D[1:i_mld,iprof_chla]=RAPP_at_MLD*MED_BBP700[1:i_mld,iprof_chla]
 
+		RAPP_at_MLD_NPQ = CHLA_NPQ_D[i_mld+1,iprof_chla] / MED_BBP700[i_mld+1,iprof_chla]
+		CHLA_NPQ_D[1:i_mld,iprof_chla] = RAPP_at_MLD_NPQ * MED_BBP700[1:i_mld,iprof_chla]
 	} else {
 
 		CHLA_NPQ_D[1:i_sack,iprof_chla]=MED_BBP700[1:i_sack,iprof_chla]*max(RAPP_in_MLD)
